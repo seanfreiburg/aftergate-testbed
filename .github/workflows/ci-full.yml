@@ -1,0 +1,27 @@
+name: CI-full
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Commit to test
+        required: true
+# Newer pushes cancel in-flight full runs, so rapid merges leave unverified
+# commits behind. Manual dispatches (used for bisect) are never cancelled.
+concurrency:
+  group: full-${{ github.event_name }}-${{ inputs.sha || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+jobs:
+  full:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha || github.sha }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Simulated long integration suite
+        run: sleep 100
+      - run: go test ./...
