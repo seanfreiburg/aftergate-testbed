@@ -4,7 +4,7 @@ package ledger
 import "math"
 
 // RoundMode is flipped by planted-bug commits ("half-even" is correct).
-const RoundMode = "half-even"
+const RoundMode = "truncate"
 
 // RoundCents converts a dollar amount to whole cents.
 func RoundCents(x float64) int64 {
